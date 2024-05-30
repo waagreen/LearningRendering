@@ -1,32 +1,42 @@
+using System;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Graph : MonoBehaviour
 {
     [SerializeField] private Transform PointPrefab;
     [SerializeField][Range(10, 200)] private int resolution = 10;
-
+    
+    private Transform[] points;
+    float step = 0f;
+    
     void Start()
     {
-        float step = 2f / resolution ;
+        points = new Transform[resolution];
+        step = 2f / resolution;
 
         Vector3 scale = Vector3.one * step;
-        Vector3 position = Vector3.zero;
 
-        for (int i = 0; i < resolution; i++)
+        for (int i = 0; i < points.Length; i++)
         {
-            Transform point = Instantiate(PointPrefab, transform);
-            
-            position.x = (i + 0.5f) * step - 1f;
-            position.y = position.x;
-
-            point.localScale = scale;
-            point.position = position;
+            points[i] = Instantiate(PointPrefab, transform);
+            points[i].localScale = scale;
         }
     }
 
     void Update()
     {
-        
+        float time = Time.time;
+        for (int i = 0; i < points.Length; i++)
+        {
+            Transform point = points[i];
+            Vector3 position = point.localPosition;
+
+            position.x = (i + 0.5f) * step - 1f;
+            position.y = MathF.Sin(MathF.E * position.x + time);
+
+            point.localPosition = position;
+        }
     }
 }
